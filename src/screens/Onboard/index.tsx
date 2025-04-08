@@ -7,10 +7,15 @@ import { styles } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainNavigationStackType } from '@stacks/MainNavigationStack';
+import useLocalStorage from '@hooks/useLocalStorage';
 
 const Onboard = () => {
+  const { SaveToStorage } = useLocalStorage();
   const navigation = useNavigation<NativeStackNavigationProp<MainNavigationStackType>>();
-  const navigateTo = () => navigation.replace('BottomNavigation');
+  const navigateTo = async () => {
+    await SaveToStorage('ONBOARD', 'TRUE');
+    navigation.replace('BottomNavigation');
+  };
 
   return (
     <View style={styles.container}>

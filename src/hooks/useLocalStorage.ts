@@ -8,6 +8,7 @@ const useLocalStorage = () => {
     const SaveToStorage = async (key: keyof typeof LocalStorageKeys, value: string) => {
         try {
             await AsyncStorage.setItem(key, value);
+            console.log('setted');
         } catch (e) {
             console.log(`value cannot saved: ${e}`)
         }
