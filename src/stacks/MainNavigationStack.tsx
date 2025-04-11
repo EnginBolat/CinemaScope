@@ -5,10 +5,15 @@ import BottomNavigationStack from './BottomNavigationStack';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { AppColors } from '@constants/AppColors';
+import MovieDetails from '@screens/MovieDetails/MovieDetails';
+import { Popular } from '@models/Popular';
 
 export type MainNavigationStackType = {
   Onboard: undefined;
   BottomNavigation: undefined;
+  MovieDetails: {
+    movie: Popular;
+  };
 };
 
 const MainNavigationStack = () => {
@@ -41,6 +46,7 @@ const MainNavigationStack = () => {
     <MainNavigation.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
       <MainNavigation.Screen name="Onboard" component={Onboard} />
       <MainNavigation.Screen name="BottomNavigation" component={BottomNavigationStack} />
+      <MainNavigation.Screen name="MovieDetails" component={MovieDetails} />
     </MainNavigation.Navigator>
   );
 };

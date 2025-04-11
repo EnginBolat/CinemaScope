@@ -1,7 +1,8 @@
+import { RootPopular } from '@models/Popular';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosRequestConfig } from 'axios';
-
-const BASE_URL = 'https://jsonplaceholder.typicode.com/';
+import { AppEndpoints, Token } from '@constants/AppEndpoints'
+import { BASE_URL } from '@constants/AppConfig';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -39,7 +40,10 @@ const axiosBaseQuery =
                     method,
                     data,
                     params,
-                    headers,
+                    headers: {
+                        ...headers,
+                        Authorization: `Bearer ${Token}`
+                    },
                 });
                 return { data: result };
             } catch (axiosError: any) {
@@ -56,19 +60,13 @@ const axiosBaseQuery =
 export const api = createApi({
     baseQuery: axiosBaseQuery({ baseUrl: BASE_URL }),
     endpoints: build => ({
-        //     getTodoById: build.query<Todo, string>({
-        //       query: (id: string) => ({
-        //         url: `todos/${id}`,
-        //         method: 'GET',
-        //       }),
-        //     }),
-        //     getTodos: build.query<Todo[], void>({
-        //       query: () => ({
-        //         url: 'todos',
-        //         method: 'GET',
-        //       }),
-        //     }),
+        getPopularContent: build.query<RootPopular, void>({
+            query: () => ({
+                url: AppEndpoints.popular.url,
+                method: AppEndpoints.popular.method
+            })
+        })
     }),
 });
 
-// export const {useGetTodoByIdQuery, useGetTodosQuery} = api;
+export const { useGetPopularContentQuery } = api;

@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
         height: scaleHeight(72),
         paddingHorizontal: scaleWidth(20),
         backgroundColor: AppColors.primary,
+        flexDirection: 'row',
     },
     titleColor: {
         color: 'white',
@@ -17,5 +18,15 @@ export const styles = StyleSheet.create({
     image: {
         height: scaleHeight(64),
         width: scaleWidth(64),
+        position: 'absolute',
+        left: '50%',
     },
+    leftIconContainer: {
+        position: 'absolute',
+        left: 12
+    },
+    rightIconContainer: {
+        position: 'absolute',
+        right: 12
+    }
 });

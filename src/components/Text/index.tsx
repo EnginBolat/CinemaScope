@@ -8,7 +8,11 @@ const Text: FC<TextProps> = props => {
 
   const textStyle = StyleSheet.compose(AppTextType[type], style);
 
-  return <RNText style={textStyle}>{text}</RNText>;
+  return (
+    <RNText style={[{ color }, textStyle]} {...props}>
+      {text}
+    </RNText>
+  );
 };
 
 export default Text;
