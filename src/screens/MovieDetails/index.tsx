@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Header, Text, BottomSheet, Icon } from '@components/index';
 import { AppColors } from '@constants/AppColors';
 import { BASE_W500_URL } from '@constants/AppConfig';
@@ -38,8 +38,14 @@ const MovieDetails = () => {
   const isPageLoading = movieCastLoading || movieDetailsIsLoading;
   const isPageHaveError = movieCastError || movieDetailsError;
 
-  const heroImage: Source = useMemo(() => {
-    return { uri: BASE_W500_URL + movieDetails?.backdrop_path, priority: FastImage.priority.high, cache: 'cacheOnly' };
+  const HeroImage = useCallback(() => {
+    const hero: Source = {
+      uri: BASE_W500_URL + movieDetails?.backdrop_path,
+      priority: FastImage.priority.normal,
+      cache: 'immutable',
+    };
+
+    return <FastImage source={hero} style={styles.heroImage} />
   }, [movie, movieDetails]);
 
   const handleAddFavorites = (id: string) => {
@@ -67,11 +73,13 @@ const MovieDetails = () => {
         <ScrollView
           style={{ flex: 1, marginBottom: scaleHeight(24) }}
           nestedScrollEnabled
-          showsHorizontalScrollIndicator={false}>
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          >
           {isPageLoading && <Loading />}
           {!isPageHaveError && !isPageLoading && (
             <>
-              <FastImage source={heroImage} style={styles.heroImage} />
+              <HeroImage />
               <TitleAndRating title={movie.title} voteAverage={movieDetails?.vote_average ?? movie.vote_average} />
               <GenreAndReleaseDate genres={movieDetails?.genres} releaseDate={movieDetails?.release_date} />
               <Overview overview={movie.overview} />
