@@ -36,7 +36,7 @@ const Home = () => {
 
   return (
     <View style={{ backgroundColor: AppColors.primary, alignItems: 'center', flex: 1 }}>
-      <ScrollView nestedScrollEnabled>
+      <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
         <Header isHaveHeader={true} />
         <View
           style={{
@@ -48,7 +48,7 @@ const Home = () => {
           {popularContentData && (
             <>
               <View style={{ marginLeft: STATIC_PADDING, marginBottom: 12 }}>
-                <Text type="mediumCaption14" text="Keşfet" />
+                <Text type="mediumHeading620" text="Keşfet" />
               </View>
               <FlatList
                 data={popularContentData.results}
@@ -61,8 +61,8 @@ const Home = () => {
           )}
           {nowePlayingContentData && (
             <>
-              <View style={{ marginLeft: STATIC_PADDING, marginBottom: 12 }}>
-                <Text type="mediumCaption14" text="Now Playing" />
+              <View style={{ marginLeft: STATIC_PADDING, marginVertical: 24 }}>
+                <Text type="mediumHeading620" text="Now Playing" />
               </View>
               <FlatList
                 data={nowePlayingContentData.results}
@@ -75,8 +75,8 @@ const Home = () => {
           )}
           {upcomingMovies && (
             <>
-              <View style={{ marginLeft: STATIC_PADDING, marginBottom: 12 }}>
-                <Text type="mediumCaption14" text="Upcoming" />
+              <View style={{ marginLeft: STATIC_PADDING, marginVertical: 24 }}>
+                <Text type="mediumHeading620" text="Upcoming" />
               </View>
               <FlatList
                 data={upcomingMovies.results}
