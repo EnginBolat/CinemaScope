@@ -3,9 +3,11 @@ import { TypedUseSelectorHook, useDispatch as useReduxDispatch, useSelector } fr
 
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { api } from './slice/request';
+import mainSlice from './slice/mainSlice';
 
 export const store = configureStore({
     reducer: {
+        main: mainSlice,
         [api.reducerPath]: api.reducer
     },
     middleware: (defaultMiddleware) => defaultMiddleware().concat(api.middleware)

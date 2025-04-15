@@ -1,14 +1,26 @@
-type RequestType = 'delete' | 'post' | 'update' | 'get'
-type EndpointBody = {
-    endpoint: string;
-    method: RequestType
-}
-
-export const Token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkMmZmNzI0YjdkMzVhYTJkNjk2MjQ4MTNjYjEzN2Q4YiIsIm5iZiI6MTY1MjcwODIxMy41MjEsInN1YiI6IjYyODI1Mzc1ZmIzZjYxMTI3MmFiYmEzYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KJujTWKLPIpZMX_HivHJ3dPNT85NLUYUjYHLCcONuxg"
-
 export const AppEndpoints = {
     popular: {
-        url: '/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc',
+        url: '/3/discover/movie?include_adult=false&include_video=true&language=en-US&page=1&sort_by=popularity.desc',
         method: 'GET',
     },
-}
+    movieDetailsById: (id: string) => ({
+        url: `/3/movie/${id}?language=en-US`,
+        method: 'GET',
+    }),
+    movieCastByMovieId: (movieId: string) => ({
+        url: `/3/movie/${movieId}/credits`,
+        method: 'GET'
+    }),
+    popularMovies: {
+        url: '/3/discover/movie?include_adult=false&include_video=True&language=en-US&page=1&sort_by=popularity.desc',
+        method: 'GET'
+    },
+    nowPlayingMovie: (page: number = 1) => ({
+        url: `/3/movie/now_playing?language=en-US&page=${page}`,
+        method: 'GET'
+    }),
+    upcomingMovie: (page: number = 1) => ({
+        url: `/3/movie/upcoming?language=en-US&page=${page}`,
+        method: 'GET'
+    })
+};

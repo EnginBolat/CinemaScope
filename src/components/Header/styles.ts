@@ -23,10 +23,10 @@ export const styles = StyleSheet.create({
     },
     leftIconContainer: {
         position: 'absolute',
-        left: 12
+        left: 18
     },
     rightIconContainer: {
         position: 'absolute',
-        right: 12
+        right: 18
     }
 });

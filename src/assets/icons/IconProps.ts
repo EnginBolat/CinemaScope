@@ -1,4 +1,4 @@
-export type IconProps = {
+export interface IconProps {
     size?: number
     height?: number,
     width?: number,

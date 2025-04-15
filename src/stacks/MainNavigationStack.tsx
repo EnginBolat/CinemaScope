@@ -5,7 +5,7 @@ import BottomNavigationStack from './BottomNavigationStack';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { AppColors } from '@constants/AppColors';
-import MovieDetails from '@screens/MovieDetails/MovieDetails';
+import MovieDetails from '@screens/MovieDetails/';
 import { Popular } from '@models/Popular';
 
 export type MainNavigationStackType = {

@@ -1,3 +1,4 @@
+import { IconType } from "@assets/icons";
 import { AppTextType } from "@constants/AppTextType";
 
 export type IHeaderProps = {
@@ -6,6 +7,6 @@ export type IHeaderProps = {
     titleType?: keyof typeof AppTextType;
     leftIconName?: string;
     leftIconOnPress?: () => void;
-    rightIconName?: string;
+    rightIconName?: IconType;
     rightIconOnPress?: () => void;
 };
