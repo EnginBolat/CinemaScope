@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
 import { IHeaderProps } from './types';
 import Images from '@assets/images';
 import { scale, scaleHeight, scaleWidth } from '@helpers/helper';
@@ -8,6 +8,8 @@ import { styles } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import ChevronLeft from '@assets/icons/ChevronLeft';
 import { AppColors } from '@constants/AppColors';
+import Icon from '@components/Icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Header = (props: IHeaderProps) => {
   const {
@@ -35,12 +37,14 @@ const Header = (props: IHeaderProps) => {
     if (canGoBack) navigation.goBack();
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: insets.top }]}>
       {showLeftIcon() && (
-        <Pressable onPress={innerLeftIconOnPress} style={styles.leftIconContainer}>
+        <TouchableOpacity onPress={innerLeftIconOnPress} style={styles.leftIconContainer}>
           <ChevronLeft color={AppColors.white} size={scale(32)} />
-        </Pressable>
+        </TouchableOpacity>
       )}
       {title && !isHaveHeader && <Text type={titleType} text={title} style={styles.titleColor} />}
       {isHaveHeader && !title && (
@@ -54,9 +58,9 @@ const Header = (props: IHeaderProps) => {
         />
       )}
       {rightIconName && (
-        <Pressable style={styles.rightIconContainer}>
-          <Text type="mediumHeading620" text=">" onPress={rightIconOnPress} />
-        </Pressable>
+        <TouchableOpacity onPress={rightIconOnPress} style={styles.rightIconContainer}>
+          <Icon size={24} name={rightIconName} color="white" />
+        </TouchableOpacity>
       )}
     </View>
   );

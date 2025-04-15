@@ -1,8 +1,11 @@
 import { RootPopular } from '@models/Popular';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosRequestConfig } from 'axios';
-import { AppEndpoints, Token } from '@constants/AppEndpoints'
+import { AppEndpoints } from '@constants/AppEndpoints'
 import { BASE_URL } from '@constants/AppConfig';
+import { MovieDetails } from '@models/MovieDetailts';
+import { CastRoot } from '@models/Cast';
+import { NowPlayingRoot } from '@models/NowPlaying';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -42,7 +45,7 @@ const axiosBaseQuery =
                     params,
                     headers: {
                         ...headers,
-                        Authorization: `Bearer ${Token}`
+                        Authorization: `Bearer ${process.env.API_REQUEST_TOKEN}`
                     },
                 });
                 return { data: result };
@@ -65,8 +68,32 @@ export const api = createApi({
                 url: AppEndpoints.popular.url,
                 method: AppEndpoints.popular.method
             })
+        }),
+        movieDetailsById: build.query<MovieDetails, string>({
+            query: (id: string) => ({
+                url: AppEndpoints.movieDetailsById(id).url,
+                method: AppEndpoints.movieDetailsById(id).method
+            })
+        }),
+        movieCastByMovieId: build.query<CastRoot, string>({
+            query: (movieId: string) => ({
+                url: AppEndpoints.movieCastByMovieId(movieId).url,
+                method: AppEndpoints.movieCastByMovieId(movieId).method
+            })
+        }),
+        nowPlayingMovie: build.query<NowPlayingRoot, number>({
+            query: (page: number) => ({
+                url: AppEndpoints.nowPlayingMovie(page).url,
+                method: AppEndpoints.nowPlayingMovie(page).method
+            })
+        }),
+        upcomingMovie: build.query<NowPlayingRoot, number>({
+            query: (page: number) => ({
+                url: AppEndpoints.upcomingMovie(page).url,
+                method: AppEndpoints.upcomingMovie(page).method
+            })
         })
     }),
 });
 
-export const { useGetPopularContentQuery } = api;
+export const { useGetPopularContentQuery, useMovieDetailsByIdQuery, useMovieCastByMovieIdQuery, useNowPlayingMovieQuery, useUpcomingMovieQuery } = api;
