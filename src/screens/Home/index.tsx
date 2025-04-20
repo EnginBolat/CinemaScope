@@ -10,9 +10,11 @@ import MovieCard from '@components/MovieCard';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainNavigationStackType } from '@stacks/MainNavigationStack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Home = () => {
   const navigation = useNavigation<NativeStackNavigationProp<MainNavigationStackType>>();
+  const insets = useSafeAreaInsets();
   const { data: popularContentData, isError: popularError, isLoading: popularLoading } = useGetPopularContentQuery();
   const {
     data: nowePlayingContentData,
@@ -36,7 +38,10 @@ const Home = () => {
 
   return (
     <View style={{ backgroundColor: AppColors.primary, alignItems: 'center', flex: 1 }}>
-      <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
+      <ScrollView
+        nestedScrollEnabled
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom }}>
         <Header isHaveHeader={true} />
         <View
           style={{
