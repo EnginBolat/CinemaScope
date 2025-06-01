@@ -6,6 +6,7 @@ export type IHeaderProps = {
     title?: string;
     titleType?: keyof typeof AppTextType;
     leftIconName?: string;
+    leftIconShown?: boolean;
     leftIconOnPress?: () => void;
     rightIconName?: IconType;
     rightIconOnPress?: () => void;

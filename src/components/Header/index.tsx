@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { IHeaderProps } from './types';
 import Images from '@assets/images';
@@ -18,16 +18,17 @@ const Header = (props: IHeaderProps) => {
     titleType = 'boldHeading620',
     leftIconName,
     leftIconOnPress,
+    leftIconShown = true,
     rightIconName,
     rightIconOnPress,
   } = props;
   const navigation = useNavigation();
   const canGoBack = navigation.canGoBack();
-
-  const showLeftIcon = () => {
+  
+  const showLeftIcon = useMemo(()=>{
     if (leftIconName || canGoBack) return true;
     return false;
-  };
+  },[])
 
   const innerLeftIconOnPress = () => {
     if (leftIconOnPress) {
@@ -41,7 +42,7 @@ const Header = (props: IHeaderProps) => {
 
   return (
     <View style={[styles.container, { marginTop: insets.top }]}>
-      {showLeftIcon() && (
+      {showLeftIcon && (
         <TouchableOpacity onPress={innerLeftIconOnPress} style={styles.leftIconContainer}>
           <ChevronLeft color={AppColors.white} size={scale(32)} />
         </TouchableOpacity>
