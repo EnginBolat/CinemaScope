@@ -4,12 +4,12 @@ import { TextProps } from './type';
 import { AppTextType } from '@constants/AppTextType';
 
 const Text: FC<TextProps> = props => {
-  const { style, text, type = 'regularSmall12', color = 'white' } = props;
+  const { style, text, type = 'regularSmall12', color = 'white', ...rest } = props;
 
-  const textStyle = StyleSheet.compose(AppTextType[type], style);
+  const textStyle = StyleSheet.compose(style, AppTextType[type]);
 
   return (
-    <RNText style={[{ color }, textStyle]} {...props}>
+    <RNText style={[{ color }, textStyle]} {...rest}>
       {text}
     </RNText>
   );

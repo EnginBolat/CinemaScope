@@ -1,13 +1,14 @@
 import { FC, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useDispatch } from 'react-redux';
 
 import Icons from '@assets/icons';
 import { IconProps } from '@assets/icons/IconProps';
+
 import { AppColors } from '@constants/AppColors';
-import Home from '@screens/Home';
 import useLocalStorage from '@hooks/useLocalStorage';
-import { useDispatch } from 'react-redux';
-import { setFavories } from '@store/slice/mainSlice';
+import { IFavoriteAndWatchLater, setFavories } from '@store/slice/mainSlice';
+import { Home, WatchList } from '@screens/index';
 
 type BottomNavigationStackTypes = {
   Home: undefined;
@@ -24,7 +25,7 @@ const BottomNavigationStack = () => {
 
   useEffect(() => {
     const getFavorites = async () => {
-      const values = await GetFromStorageJSON<string[]>('FAVORITES');
+      const values = await GetFromStorageJSON<IFavoriteAndWatchLater[]>('FAVORITES');
       if (values) dispatch(setFavories(values));
     };
 
@@ -51,7 +52,7 @@ const BottomNavigationStack = () => {
       />
       <Tab.Screen
         name="WatchList"
-        component={Home}
+        component={WatchList}
         options={{
           tabBarIcon: ({ focused }) => setTabbarIcon(Icons.AccessTimeIcon, focused),
         }}

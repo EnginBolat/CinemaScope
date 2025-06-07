@@ -1,9 +1,11 @@
-import { AppTextType } from "@constants/AppTextType";
-import { TextStyle, TouchableOpacityProps } from "react-native";
+import { IconType } from '@assets/icons';
+import { AppTextType } from '@constants/AppTextType';
+import { TextStyle, TouchableOpacityProps } from 'react-native';
 
 export interface IButton extends TouchableOpacityProps {
-    text: string;
-    loading?: boolean;
-    textStyle?: TextStyle;
-    textType?: keyof typeof AppTextType;
-  }
+  leftIcon?: IconType;
+  text: string;
+  loading?: boolean;
+  textStyle?: TextStyle;
+  textType?: keyof typeof AppTextType;
+}

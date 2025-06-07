@@ -1,5 +1,8 @@
-export {default as Text} from './Text';
-export {default as Button} from './Button';
-export {default as Header} from './Header';
-export {default as Icon} from './Icon';
-export {default as BottomSheet} from './BottomSheet';
+export { default as Text } from './Text';
+export { default as Button } from './Button';
+export { default as Header } from './Header';
+export { default as Icon } from './Icon';
+export { default as BottomSheet } from './BottomSheet';
+export { default as TabSwitch } from './TabSwitch';
+export { default as MovieCard } from './MovieCard';
+export { default as MovieCardWithDescription } from './MovieCardWithDescription';

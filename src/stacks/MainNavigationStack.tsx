@@ -7,6 +7,15 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { AppColors } from '@constants/AppColors';
 import MovieDetails from '@screens/MovieDetails/';
 import { Popular } from '@models/Popular';
+import { useDispatch } from 'react-redux';
+import { setFavories, setWatchLater } from '@store/slice/mainSlice';
+import { api } from '@store/slice/request.ts';
+
+export enum MainNavigationpPages {
+  Onboard = 'Onboard',
+  BottomNavigation = 'BottomNavigation',
+  MovieDetails = 'MovieDetails',
+}
 
 export type MainNavigationStackType = {
   Onboard: undefined;
@@ -17,9 +26,32 @@ export type MainNavigationStackType = {
 };
 
 const MainNavigationStack = () => {
+  const dispatch = useDispatch();
   const { GetFromStorage } = useLocalStorage();
   const MainNavigation = createNativeStackNavigator<MainNavigationStackType>();
   const [initialRoute, setInitialRoute] = useState<keyof MainNavigationStackType | null>(null);
+
+  useEffect(() => {
+    const setupFavorites = async () => {
+      const favorites = await GetFromStorage<string>('FAVORITES');
+      if (favorites) {
+        dispatch(setFavories(JSON.parse(favorites)));
+      }
+    };
+    const setupWatchLater = async () => {
+      const watchLater = await GetFromStorage<string>('WATCHLATER');
+      if (watchLater) {
+        dispatch(setWatchLater(JSON.parse(watchLater)));
+      }
+    };
+
+    setupFavorites();
+    setupWatchLater();
+  }, []);
+
+  useEffect(() => {
+    dispatch(api.util.resetApiState());
+  }, []);
 
   useEffect(() => {
     const getIsSawOnboard = async () => {

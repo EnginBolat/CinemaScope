@@ -41,7 +41,6 @@ const BottomSheet = forwardRef<GorhomBottomSheet, BottomSheetProps>((props, ref)
 
     let currentSecond = timeout;
     const countdown = setInterval(() => {
-      console.log('çalıştı');
       if (currentSecond <= 0) {
         clearInterval(countdown);
       }

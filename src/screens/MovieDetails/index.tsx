@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { Header, Text, BottomSheet, Icon } from '@components/index';
+import { Header, Text, BottomSheet, Icon, Button } from '@components/index';
 import { AppColors } from '@constants/AppColors';
 import { BASE_W500_URL } from '@constants/AppConfig';
 import FastImage, { Source } from '@d11/react-native-fast-image';
@@ -10,17 +10,30 @@ import { ActivityIndicator, SafeAreaView, ScrollView, View } from 'react-native'
 import GorhomBottomSheet from '@gorhom/bottom-sheet';
 
 import { styles } from './style';
-import { CastList, GenreAndReleaseDate, Overview, ProductionCompaniesList, TitleAndRating } from './components';
+import {
+  CastList,
+  GenreAndReleaseDate,
+  Overview,
+  ProductionCompaniesList,
+  TitleAndRating,
+  WatchListBottomSheetBody,
+} from './components';
 import { useAppDispatch, useAppSelector } from '@store/store';
 import useLocalStorage from '@hooks/useLocalStorage';
-import { setFavories } from '@store/slice/mainSlice';
-import { scaleHeight } from '@helpers/helper';
+import { IFavoriteAndWatchLater, setFavories, setWatchLater } from '@store/slice/mainSlice';
+import { scaleHeight, setListForUpdateStateAndStorage } from '@helpers/helper';
+import { STATIC_PADDING } from '@constants/AppConstants';
+import { translate } from '@core/i18n';
+import AddFavoriteBottomSheetBody from './components/AddFavoriteBottomSheetBody';
 
 const MovieDetails = () => {
+  // States
+
   const { SaveToStorageJSON } = useLocalStorage();
   const dispatch = useAppDispatch();
-  const favorites = useAppSelector(state => state.main.favorites);
+  const { favorites, watchLater } = useAppSelector(state => state.main);
   const bottomSheetRef = useRef<GorhomBottomSheet>(null);
+  const watchListBottomSheetRef = useRef<GorhomBottomSheet>(null);
   const route = useRoute<RouteProp<MainNavigationStackType, 'MovieDetails'>>();
   const { movie } = route?.params;
   const {
@@ -35,8 +48,55 @@ const MovieDetails = () => {
     error: movieCastError,
   } = useMovieCastByMovieIdQuery(movie.id.toString());
 
+  // Logic
+
   const isPageLoading = movieCastLoading || movieDetailsIsLoading;
   const isPageHaveError = movieCastError || movieDetailsError;
+
+  const handleAddFavorites = (id: string) => {
+    const isFavoriteExist = favorites.some(item => item.id?.toString() === id);
+    const newUpdatedArray: IFavoriteAndWatchLater[] = isFavoriteExist
+      ? favorites.filter(item => item.id?.toString() !== id)
+      : [
+          ...favorites,
+          {
+            type: 'tvShow',
+            ...movie!,
+          },
+        ];
+
+    dispatch(setFavories(newUpdatedArray));
+    SaveToStorageJSON('FAVORITES', newUpdatedArray);
+    if (!isFavoriteExist) bottomSheetRef.current?.expand();
+  };
+
+  const handleAddWatchList = (id: string) => {
+    const isItemExistInWatchList = watchLater.some(item => item?.id?.toString() === id);
+    const newUpdatedArray: IFavoriteAndWatchLater[] = isItemExistInWatchList
+      ? watchLater.filter(item => item?.id?.toString() !== id)
+      : [
+          ...watchLater,
+          {
+            type: 'tvShow',
+            ...movie!,
+          },
+        ];
+    dispatch(setWatchLater(newUpdatedArray));
+    SaveToStorageJSON('WATCHLATER', newUpdatedArray);
+    if (!isItemExistInWatchList) watchListBottomSheetRef.current?.expand();
+  };
+
+  const watchLaterButtonText = watchLater.some(item => item?.id?.toString() === movie.id.toString())
+    ? translate('app.details.removeWatchLater')
+    : translate('app.details.addWatchList');
+
+  const rightIconName = useMemo(() => {
+    if (isPageLoading) return undefined;
+    if (favorites.some(item => item?.id?.toString() === movie.id.toString())) return 'HeartFilled';
+    return 'HeartOutline';
+  }, [isPageLoading,favorites]);
+
+  // Components
 
   const HeroImage = useCallback(() => {
     const hero: Source = {
@@ -45,16 +105,8 @@ const MovieDetails = () => {
       cache: 'immutable',
     };
 
-    return <FastImage source={hero} style={styles.heroImage} />
+    return <FastImage source={hero} style={styles.heroImage} />;
   }, [movie, movieDetails]);
-
-  const handleAddFavorites = (id: string) => {
-    const isMovieExist = favorites.includes(id);
-    const newFavorites = isMovieExist ? favorites.filter(favId => favId !== id) : [...favorites, id];
-    dispatch(setFavories(newFavorites));
-    SaveToStorageJSON('FAVORITES', newFavorites);
-    if (!isMovieExist) bottomSheetRef.current?.expand();
-  };
 
   const Loading = () => (
     <View style={[styles.f1, styles.alignItemCenter]}>
@@ -67,7 +119,7 @@ const MovieDetails = () => {
       <View style={[styles.f1, styles.container]}>
         <Header
           isHaveHeader={false}
-          rightIconName={favorites.includes(movie.id.toString()) ? 'HeartFilled' : 'HeartOutline'}
+          rightIconName={rightIconName}
           rightIconOnPress={() => handleAddFavorites(movie.id.toString())}
         />
         <ScrollView
@@ -75,12 +127,19 @@ const MovieDetails = () => {
           nestedScrollEnabled
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          >
+        >
           {isPageLoading && <Loading />}
-          {!isPageHaveError && !isPageLoading && (
+          {!isPageLoading && (
             <>
               <HeroImage />
               <TitleAndRating title={movie.title} voteAverage={movieDetails?.vote_average ?? movie.vote_average} />
+              <View style={{ alignItems: 'center', paddingHorizontal: STATIC_PADDING, paddingBottom: 8 }}>
+                <Button
+                  onPress={() => handleAddWatchList(movie.id.toString())}
+                  text={watchLaterButtonText}
+                  leftIcon="AccessTimeIcon"
+                />
+              </View>
               <GenreAndReleaseDate genres={movieDetails?.genres} releaseDate={movieDetails?.release_date} />
               <Overview overview={movie.overview} />
               <CastList cast={movieCast?.cast} />
@@ -94,12 +153,15 @@ const MovieDetails = () => {
         onClose={() => bottomSheetRef.current?.close()}
         height={['25']}
         enableDynamicSizing={false}
-        timeout={3}
-        contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: 1, gap: 32 }}>
-        <View style={{ justifyContent: 'center', alignItems: 'center', gap: 18 }}>
-          <Icon name="HeartFilled" color="#ff002b" size={44} />
-          <Text text="Film Başarıyla Favorilere Eklendi" color="black" type="mediumBody16" />
-        </View>
+        contentContainerStyle={styles.bottomSheetContentContainer}>
+        <AddFavoriteBottomSheetBody onPress={() => bottomSheetRef.current?.close()} />
+      </BottomSheet>
+      <BottomSheet
+        ref={watchListBottomSheetRef}
+        onClose={() => watchListBottomSheetRef.current?.close()}
+        enableDynamicSizing={true}
+        contentContainerStyle={styles.bottomSheetContentContainer}>
+        <WatchListBottomSheetBody onPress={() => watchListBottomSheetRef.current?.close()} />
       </BottomSheet>
     </>
   );
