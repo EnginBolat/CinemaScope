@@ -2,6 +2,7 @@ import { AppColors } from '@constants/AppColors';
 import { STATIC_PADDING } from '@constants/AppConstants';
 import { scale, scaleHeight } from '@helpers/helper';
 import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const styles = StyleSheet.create({
   f1: {
@@ -75,5 +76,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 18,
+    paddingTop: 24,
   },
+  addWatchListButtonContainer: {
+    alignItems: 'center',
+    paddingHorizontal: STATIC_PADDING,
+    paddingBottom: 8,
+  },
+  rootContainer: {
+    flex: 1,
+    backgroundColor: AppColors.primary,
+  }
 });

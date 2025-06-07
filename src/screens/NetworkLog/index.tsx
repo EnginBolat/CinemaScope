@@ -1,23 +1,14 @@
 import React, { FC, useState } from 'react';
-import {
-  FlatList,
-  Text as RNText,
-  View,
-  StyleSheet,
-  SafeAreaView,
-  Pressable,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import { AppColors } from '@constants/AppColors.ts';
+import { FlatList, Text as RNText, View, SafeAreaView, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { NetworkLog, requestLogs } from '@store/slice/request.ts';
 import { Icon, Text } from '@components/index.ts';
-import { STATIC_PADDING } from '@constants/AppConstants.ts';
 import { useAppDispatch } from '@store/store.ts';
 import { setFavories, setWatchLater } from '@store/slice/mainSlice.ts';
 import useLocalStorage from '@hooks/useLocalStorage.ts';
 import moment from 'moment';
 import 'moment/locale/tr';
+
+import { styles } from './styles.ts';
 
 type Props = {
   index: number;
@@ -30,25 +21,17 @@ const RequestDetails: FC<Props> = props => {
   return (
     <View key={index}>
       <Pressable onPress={() => setExpandedIndex(expandedIndex === index ? null : index)}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.expandedIndexRow}>
           <Icon name="ChevronLeft" color="#fff" />
           <RNText style={{ color: 'white' }}>{index + 1}</RNText>
         </View>
       </Pressable>
       {expandedIndex === index && (
-        <View
-          style={{
-            borderWidth: 1,
-            borderRadius: 12,
-            borderColor: AppColors.white50,
-            padding: 12,
-            marginHorizontal: 12,
-            marginVertical: 8,
-          }}>
+        <View style={styles.expandedContainer}>
           {Object.entries(entry).map(([key, value]) => (
-            <View key={key} style={{ flexDirection: 'row', flexWrap: 'wrap', marginVertical: 4 }}>
-              <RNText style={{ color: 'red', fontWeight: 'bold' }}>{key}:</RNText>
-              <RNText style={{ color: 'white', marginLeft: 6 }}>
+            <View key={key} style={styles.keyValueContainer}>
+              <RNText style={styles.keyText}>{key}:</RNText>
+              <RNText style={styles.keyText}>
                 {typeof value === 'object' ? JSON.stringify(value) : String(value)}
               </RNText>
             </View>
@@ -99,21 +82,22 @@ const QARequestLoggerScreen = () => {
     const resultsList = Array.isArray(parsedData?.results) ? parsedData.results : [];
 
     const makeCurl = () => {
-      if (!item || !item.url || !item.headers) {
+      if (!item || !item.url || !item.method || !item.headers) {
         console.warn('Missing required fields for curl');
         return;
       }
 
-      const curlParts = [`curl -X ${item.method} "${item.url}"`];
+      const curlParts = [`curl -X ${item.method.toUpperCase()} "${item.url}"`];
 
       Object.entries(item.headers).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          curlParts.push(`-H "${key}: ${value}"`);
+          curlParts.push(`-H "${key}: ${String(value)}"`);
         }
       });
 
       if (item.body) {
-        curlParts.push(`-d '${JSON.stringify(item.body)}'`);
+        const safeBody = JSON.stringify(item.body).replace(/"/g, '\\"');
+        curlParts.push(`--data-binary "${safeBody}"`);
       }
 
       const curlCommand = curlParts.join(' \\\n  ');
@@ -123,12 +107,7 @@ const QARequestLoggerScreen = () => {
     return (
       <Pressable onPress={() => setExpandedIndexDetails(expandedIndexDetails === index ? null : index)}>
         <View style={styles.logBox}>
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-            }}>
+          <View style={styles.logBoxTitleRow}>
             <RNText style={styles.type}>{`${item.type.toUpperCase()} - ${item?.method ?? ''}`}</RNText>
             <RNText style={styles.type}>{moment(item.date).format('D MMMM, h:mm')}</RNText>
           </View>
@@ -151,17 +130,8 @@ const QARequestLoggerScreen = () => {
             ) : (
               <RNText style={styles.data}>{JSON.stringify(parsedData, null, 2)}</RNText>
             ))}
-          <TouchableOpacity
-            onPress={makeCurl}
-            style={{
-              backgroundColor: AppColors.secondary,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginVertical: 8,
-              padding: 8,
-              borderRadius: 8,
-            }}>
-            <RNText style={{ color: AppColors.white, fontWeight: 'bold' }}>Curl</RNText>
+          <TouchableOpacity onPress={makeCurl} style={styles.renderItemButtonContainer}>
+            <RNText style={styles.renderItemButtonText}>Curl</RNText>
           </TouchableOpacity>
         </View>
       </Pressable>
@@ -169,8 +139,8 @@ const QARequestLoggerScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: AppColors.primary, flex: 1, marginHorizontal: STATIC_PADDING, gap: 24 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.titleContainer}>
         <Text text="Requests" type="boldHeading620" />
         <Pressable onPress={onPressCleanButton}>
           <Text text="Clean" type="boldSmall12" />
@@ -182,35 +152,10 @@ const QARequestLoggerScreen = () => {
         keyExtractor={item => item.id.toString()}
         ListEmptyComponent={<RNText style={styles.data}>Empty List</RNText>}
         renderItem={renderItem}
-        style={{ backgroundColor: AppColors.primary, flex: 1 }}
+        style={styles.flatListStyle}
         contentContainerStyle={styles.container}
       />
     </SafeAreaView>
   );
 };
 export default QARequestLoggerScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: AppColors.primary,
-  },
-  logBox: {
-    marginBottom: 16,
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#1e1e1e',
-  },
-  type: {
-    fontWeight: 'bold',
-    color: '#61dafb',
-  },
-  url: {
-    color: '#ffffff',
-    marginVertical: 4,
-  },
-  data: {
-    color: '#fff',
-    fontSize: 12,
-  },
-});

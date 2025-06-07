@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { MainNavigationpPages, MainNavigationStackType } from '@stacks/MainNavigationStack.tsx';
 import { useAppSelector } from '@store/store';
 import { Header, MovieCardWithDescription, TabSwitch } from '@components/index.ts';

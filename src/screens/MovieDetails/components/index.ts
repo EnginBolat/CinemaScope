@@ -4,5 +4,6 @@ export { default as TitleAndRating } from './TitleAndRating';
 export { default as Overview } from './Overview';
 export { default as GenreAndReleaseDate } from './GenreAndReleaseDate';
 export { default as WatchListBottomSheetBody } from './WatchListBottomSheetBody';
+export { default as AddFavoriteBottomSheetBody } from './AddFavoriteBottomSheetBody';
 
 

@@ -17,10 +17,13 @@ export const styles = StyleSheet.create({
     paddingRight: STATIC_PADDING,
   },
   titleRow: {
-    flexDirection: 'row',
+    gap: 4,
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   ratingWithIconRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
 });

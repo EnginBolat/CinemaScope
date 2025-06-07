@@ -1,11 +1,6 @@
-import { RootPopular } from '@models/Popular';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import axios, { AxiosRequestConfig } from 'axios';
-import { AppEndpoints } from '@constants/AppEndpoints';
 import { BASE_URL } from '@constants/AppConfig';
-import { MovieDetails } from '@models/MovieDetailts';
-import { CastRoot } from '@models/Cast';
-import { NowPlayingRoot } from '@models/NowPlaying';
 
 export type NetworkLog = {
   id: number;
@@ -58,7 +53,10 @@ axiosInstance.interceptors.response.use(
       method: response.config.method?.toUpperCase(),
       url: response.config.url,
       data: response.data,
-      headers: response.headers,
+      headers: {
+        ...response.headers,
+        Authorization: `Bearer ${process.env.API_REQUEST_TOKEN}`,
+      },
       date: new Date().toISOString(),
     });
     return response.data; // ⚠️ RTK Query ve diğer kullanım için sadece .data dönüyoruz
@@ -115,44 +113,5 @@ const axiosBaseQuery =
 
 export const api = createApi({
   baseQuery: axiosBaseQuery({ baseUrl: BASE_URL }),
-  endpoints: build => ({
-    getPopularContent: build.query<RootPopular, void>({
-      query: () => ({
-        url: AppEndpoints.popular.url,
-        method: AppEndpoints.popular.method,
-      }),
-    }),
-    movieDetailsById: build.query<MovieDetails, string>({
-      query: (id: string) => ({
-        url: AppEndpoints.movieDetailsById(id).url,
-        method: AppEndpoints.movieDetailsById(id).method,
-      }),
-    }),
-    movieCastByMovieId: build.query<CastRoot, string>({
-      query: (movieId: string) => ({
-        url: AppEndpoints.movieCastByMovieId(movieId).url,
-        method: AppEndpoints.movieCastByMovieId(movieId).method,
-      }),
-    }),
-    nowPlayingMovie: build.query<NowPlayingRoot, number>({
-      query: (page: number) => ({
-        url: AppEndpoints.nowPlayingMovie(page).url,
-        method: AppEndpoints.nowPlayingMovie(page).method,
-      }),
-    }),
-    upcomingMovie: build.query<NowPlayingRoot, number>({
-      query: (page: number) => ({
-        url: AppEndpoints.upcomingMovie(page).url,
-        method: AppEndpoints.upcomingMovie(page).method,
-      }),
-    }),
-  }),
+  endpoints: () => ({}),
 });
-
-export const {
-  useGetPopularContentQuery,
-  useMovieDetailsByIdQuery,
-  useMovieCastByMovieIdQuery,
-  useNowPlayingMovieQuery,
-  useUpcomingMovieQuery,
-} = api;
