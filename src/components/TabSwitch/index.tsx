@@ -5,6 +5,7 @@ import { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-nat
 import Animated from 'react-native-reanimated';
 import { IDimensions, ITabSwitch } from '@components/TabSwitch/types.ts';
 import styles from './styles';
+import { AppColors } from '@constants/AppColors.ts';
 
 const TabSwitch: FC<ITabSwitch> = ({ buttons, selectedTab, setSelectedTab }) => {
   const [dimensions, setDimensions] = useState<IDimensions>({ height: 20, width: 100 });
@@ -36,15 +37,19 @@ const TabSwitch: FC<ITabSwitch> = ({ buttons, selectedTab, setSelectedTab }) => 
         style={[animatedStyle, styles.selectionContainer, { height: dimensions.height - 10, width: buttonWidth - 10 }]}
       />
       <View style={styles.textContainer} onLayout={onTabBarLayout}>
-        {buttons.map((button, index) => (
-          <Pressable
-            key={index}
-            style={styles.titleContainer}
-            onPress={() => onTabPress(index)}
-            disabled={index === selectedTab}>
-            <Text style={styles.title} text={button.title} />
-          </Pressable>
-        ))}
+        {buttons.map((button, index) => {
+          const disabledColor = index !== selectedTab ? AppColors.white50 : AppColors.white;
+          const isButtonDisabled = index === selectedTab;
+          return (
+            <Pressable
+              key={index}
+              style={styles.titleContainer}
+              onPress={() => onTabPress(index)}
+              disabled={index === selectedTab}>
+              <Text style={[styles.title, { color: disabledColor }]} text={button.title} disabled={isButtonDisabled} />
+            </Pressable>
+          );
+        })}
       </View>
     </View>
   );
