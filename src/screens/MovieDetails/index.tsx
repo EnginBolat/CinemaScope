@@ -1,15 +1,23 @@
 import { useCallback, useMemo, useRef } from 'react';
-import { Header, Text, BottomSheet, Icon, Button } from '@components/index';
-import { AppColors } from '@constants/AppColors';
-import { BASE_W500_URL } from '@constants/AppConfig';
+import { ActivityIndicator, SafeAreaView, ScrollView, View } from 'react-native';
 import FastImage, { Source } from '@d11/react-native-fast-image';
 import { RouteProp, useRoute } from '@react-navigation/native';
+
+import { useMovieCastByMovieIdQuery, useMovieDetailsByIdQuery } from '@hooks/useMovieRequest.ts';
+import useLocalStorage from '@hooks/useLocalStorage';
+import { Header, BottomSheet, Button } from '@components/index';
+import { AppColors } from '@constants/AppColors';
+import { BASE_W500_URL } from '@constants/AppConfig';
+import { useAppDispatch, useAppSelector } from '@store/store';
 import { MainNavigationStackType } from '@stacks/MainNavigationStack';
-import { useMovieCastByMovieIdQuery, useMovieDetailsByIdQuery } from '@store/slice/request';
-import { ActivityIndicator, SafeAreaView, ScrollView, View } from 'react-native';
+import { IFavoriteAndWatchLater, setFavories, setWatchLater } from '@store/slice/mainSlice';
+import { translate } from '@core/i18n';
+
 import GorhomBottomSheet from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { styles } from './style';
+
 import {
   CastList,
   GenreAndReleaseDate,
@@ -17,25 +25,20 @@ import {
   ProductionCompaniesList,
   TitleAndRating,
   WatchListBottomSheetBody,
+  AddFavoriteBottomSheetBody,
 } from './components';
-import { useAppDispatch, useAppSelector } from '@store/store';
-import useLocalStorage from '@hooks/useLocalStorage';
-import { IFavoriteAndWatchLater, setFavories, setWatchLater } from '@store/slice/mainSlice';
-import { scaleHeight, setListForUpdateStateAndStorage } from '@helpers/helper';
-import { STATIC_PADDING } from '@constants/AppConstants';
-import { translate } from '@core/i18n';
-import AddFavoriteBottomSheetBody from './components/AddFavoriteBottomSheetBody';
 
 const MovieDetails = () => {
-  // States
-
   const { SaveToStorageJSON } = useLocalStorage();
   const dispatch = useAppDispatch();
-  const { favorites, watchLater } = useAppSelector(state => state.main);
+  const insets = useSafeAreaInsets();
+
   const bottomSheetRef = useRef<GorhomBottomSheet>(null);
+  const { favorites, watchLater } = useAppSelector(state => state.main);
   const watchListBottomSheetRef = useRef<GorhomBottomSheet>(null);
   const route = useRoute<RouteProp<MainNavigationStackType, 'MovieDetails'>>();
   const { movie } = route?.params;
+
   const {
     data: movieDetails,
     isLoading: movieDetailsIsLoading,
@@ -51,7 +54,6 @@ const MovieDetails = () => {
   // Logic
 
   const isPageLoading = movieCastLoading || movieDetailsIsLoading;
-  const isPageHaveError = movieCastError || movieDetailsError;
 
   const handleAddFavorites = (id: string) => {
     const isFavoriteExist = favorites.some(item => item.id?.toString() === id);
@@ -94,7 +96,7 @@ const MovieDetails = () => {
     if (isPageLoading) return undefined;
     if (favorites.some(item => item?.id?.toString() === movie.id.toString())) return 'HeartFilled';
     return 'HeartOutline';
-  }, [isPageLoading,favorites]);
+  }, [isPageLoading, favorites]);
 
   // Components
 
@@ -115,25 +117,25 @@ const MovieDetails = () => {
   );
 
   return (
-    <>
-      <View style={[styles.f1, styles.container]}>
-        <Header
-          isHaveHeader={false}
-          rightIconName={rightIconName}
-          rightIconOnPress={() => handleAddFavorites(movie.id.toString())}
-        />
+    <View style={styles.rootContainer}>
+      <Header
+        isHaveHeader={false}
+        rightIconName={rightIconName}
+        rightIconOnPress={() => handleAddFavorites(movie.id.toString())}
+      />
+      <SafeAreaView style={styles.rootContainer}>
         <ScrollView
-          style={{ flex: 1, marginBottom: scaleHeight(24) }}
+          style={styles.rootContainer}
+          contentContainerStyle={{ paddingBottom: insets.bottom }}
           nestedScrollEnabled
           showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        >
+          showsVerticalScrollIndicator={false}>
           {isPageLoading && <Loading />}
           {!isPageLoading && (
             <>
               <HeroImage />
               <TitleAndRating title={movie.title} voteAverage={movieDetails?.vote_average ?? movie.vote_average} />
-              <View style={{ alignItems: 'center', paddingHorizontal: STATIC_PADDING, paddingBottom: 8 }}>
+              <View style={styles.addWatchListButtonContainer}>
                 <Button
                   onPress={() => handleAddWatchList(movie.id.toString())}
                   text={watchLaterButtonText}
@@ -147,12 +149,10 @@ const MovieDetails = () => {
             </>
           )}
         </ScrollView>
-      </View>
+      </SafeAreaView>
       <BottomSheet
         ref={bottomSheetRef}
         onClose={() => bottomSheetRef.current?.close()}
-        height={['25']}
-        enableDynamicSizing={false}
         contentContainerStyle={styles.bottomSheetContentContainer}>
         <AddFavoriteBottomSheetBody onPress={() => bottomSheetRef.current?.close()} />
       </BottomSheet>
@@ -163,7 +163,7 @@ const MovieDetails = () => {
         contentContainerStyle={styles.bottomSheetContentContainer}>
         <WatchListBottomSheetBody onPress={() => watchListBottomSheetRef.current?.close()} />
       </BottomSheet>
-    </>
+    </View>
   );
 };
 

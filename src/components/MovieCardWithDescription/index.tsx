@@ -18,17 +18,19 @@ const MovieCardWithDescription = ({ item, onPress }: Props) => (
     />
     <View style={styles.textContainer}>
       <View style={styles.titleRow}>
-        <Text text={item.title} type="mediumBody16" />
+        <Text
+          text={item.title}
+          type="mediumBody16"
+          numberOfLines={1}
+        />
         <View style={styles.ratingWithIconRow}>
           <Star height={scale(18)} width={scale(18)} />
           <Text text={item.vote_average.toString().substring(0, 3)} type="mediumCaption14" numberOfLines={2} />
         </View>
       </View>
-      <Text text={item.overview} type="mediumCaption14" numberOfLines={7} />
+      <Text text={item.overview} type="mediumCaption14" numberOfLines={6} />
     </View>
   </Pressable>
 );
 
 export default MovieCardWithDescription;
-
-

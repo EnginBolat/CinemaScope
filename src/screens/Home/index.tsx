@@ -1,101 +1,64 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, ScrollView, View } from 'react-native';
-
-import { Header, Text } from '@components/index';
-import { AppColors } from '@constants/AppColors';
-import { useGetPopularContentQuery, useNowPlayingMovieQuery, useUpcomingMovieQuery } from '@store/slice/request';
-import { Popular } from '@models/Popular';
-import { STATIC_PADDING } from '@constants/AppConstants';
-import MovieCard from '@components/MovieCard';
+import { useCallback } from 'react';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainNavigationpPages, MainNavigationStackType } from '@stacks/MainNavigationStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const Home = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<MainNavigationStackType>>();
-  const insets = useSafeAreaInsets();
-  const { data: popularContentData, isError: popularError, isLoading: popularLoading } = useGetPopularContentQuery();
-  const {
-    data: nowPlayingContentData,
-    isError: nowPlayingError,
-    isLoading: nowPlayingLoading,
-  } = useNowPlayingMovieQuery(1);
+import { Header } from '@components/index';
+import { AppColors } from '@constants/AppColors';
+import { useGetPopularContentQuery, useNowPlayingMovieQuery, useUpcomingMovieQuery } from '@hooks/useMovieRequest.ts';
+import { Popular } from '@models/Popular';
 
-  const {
-    data: upcomingMovies,
-    isError: upcomingMovieError,
-    isLoading: upcomingMovieLoading,
-  } = useUpcomingMovieQuery(1);
+import { ContentHorizontalScrollableList } from './components';
+
+const Home = () => {
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<MainNavigationStackType>>();
+
+  const { data: popularContentData, isLoading: popularLoading } = useGetPopularContentQuery();
+  const { data: nowPlayingContentData, isLoading: nowPlayingLoading } = useNowPlayingMovieQuery(1);
+  const { data: upcomingMovies, isLoading: upcomingMovieLoading } = useUpcomingMovieQuery(1);
 
   const Loader = useCallback(() => {
     if (nowPlayingLoading || popularLoading || upcomingMovieLoading) return <ActivityIndicator />;
     return null;
   }, [nowPlayingLoading, popularLoading, upcomingMovieLoading]);
 
-  const renderItem = ({ item }: { item: Popular }) => (
-    <MovieCard item={item} onPress={() => navigation.navigate(MainNavigationpPages.MovieDetails, { movie: item })} />
-  );
+  const onPressItem = useCallback((item: Popular) => {
+    navigation.navigate(MainNavigationpPages.MovieDetails, { movie: item });
+  }, []);
 
   return (
-    <View style={{ backgroundColor: AppColors.primary, alignItems: 'center', flex: 1 }}>
-      <ScrollView
-        nestedScrollEnabled
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom }}>
-        <Header isHaveHeader={true} leftIconShown={false} />
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            paddingTop: 18,
-          }}>
-          <Loader />
-          {popularContentData && (
-            <>
-              <View style={{ marginLeft: STATIC_PADDING, marginBottom: 12 }}>
-                <Text type="mediumHeading620" text="Keşfet" />
-              </View>
-              <FlatList
-                data={popularContentData.results}
-                renderItem={renderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8, paddingHorizontal: STATIC_PADDING }}
-              />
-            </>
-          )}
-          {nowPlayingContentData && (
-            <>
-              <View style={{ marginLeft: STATIC_PADDING, marginVertical: 24 }}>
-                <Text type="mediumHeading620" text="Now Playing" />
-              </View>
-              <FlatList
-                data={nowPlayingContentData.results}
-                renderItem={renderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8, paddingHorizontal: STATIC_PADDING }}
-              />
-            </>
-          )}
-          {upcomingMovies && (
-            <>
-              <View style={{ marginLeft: STATIC_PADDING, marginVertical: 24 }}>
-                <Text type="mediumHeading620" text="Upcoming" />
-              </View>
-              <FlatList
-                data={upcomingMovies.results}
-                renderItem={renderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8, paddingHorizontal: STATIC_PADDING }}
-              />
-            </>
-          )}
-        </View>
-      </ScrollView>
-    </View>
+    <ScrollView
+      nestedScrollEnabled
+      showsVerticalScrollIndicator={false}
+      style={{ backgroundColor: AppColors.primary }}
+      contentContainerStyle={{ paddingBottom: insets.bottom, backgroundColor: AppColors.primary }}>
+      <Header isHaveHeader={true} leftIconShown={false} />
+      <Loader />
+      {popularContentData && (
+        <ContentHorizontalScrollableList
+          title="Keşfet"
+          contentList={popularContentData.results}
+          onPressItem={onPressItem}
+        />
+      )}
+      {nowPlayingContentData && (
+        <ContentHorizontalScrollableList
+          title="Now Playing"
+          contentList={nowPlayingContentData.results}
+          onPressItem={onPressItem}
+        />
+      )}
+      {upcomingMovies && (
+        <ContentHorizontalScrollableList
+          title="Upcoming"
+          contentList={upcomingMovies.results}
+          onPressItem={onPressItem}
+        />
+      )}
+    </ScrollView>
   );
 };
 
