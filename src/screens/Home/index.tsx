@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, ScrollView, View } from 'react-native';
 
 import { Header, Text } from '@components/index';
@@ -9,7 +9,7 @@ import { STATIC_PADDING } from '@constants/AppConstants';
 import MovieCard from '@components/MovieCard';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MainNavigationStackType } from '@stacks/MainNavigationStack';
+import { MainNavigationpPages, MainNavigationStackType } from '@stacks/MainNavigationStack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Home = () => {
@@ -17,7 +17,7 @@ const Home = () => {
   const insets = useSafeAreaInsets();
   const { data: popularContentData, isError: popularError, isLoading: popularLoading } = useGetPopularContentQuery();
   const {
-    data: nowePlayingContentData,
+    data: nowPlayingContentData,
     isError: nowPlayingError,
     isLoading: nowPlayingLoading,
   } = useNowPlayingMovieQuery(1);
@@ -30,10 +30,11 @@ const Home = () => {
 
   const Loader = useCallback(() => {
     if (nowPlayingLoading || popularLoading || upcomingMovieLoading) return <ActivityIndicator />;
+    return null;
   }, [nowPlayingLoading, popularLoading, upcomingMovieLoading]);
 
   const renderItem = ({ item }: { item: Popular }) => (
-    <MovieCard item={item} onPress={() => navigation.navigate('MovieDetails', { movie: item })} />
+    <MovieCard item={item} onPress={() => navigation.navigate(MainNavigationpPages.MovieDetails, { movie: item })} />
   );
 
   return (
@@ -42,7 +43,7 @@ const Home = () => {
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom }}>
-        <Header isHaveHeader={true} />
+        <Header isHaveHeader={true} leftIconShown={false} />
         <View
           style={{
             flex: 1,
@@ -64,13 +65,13 @@ const Home = () => {
               />
             </>
           )}
-          {nowePlayingContentData && (
+          {nowPlayingContentData && (
             <>
               <View style={{ marginLeft: STATIC_PADDING, marginVertical: 24 }}>
                 <Text type="mediumHeading620" text="Now Playing" />
               </View>
               <FlatList
-                data={nowePlayingContentData.results}
+                data={nowPlayingContentData.results}
                 renderItem={renderItem}
                 horizontal
                 showsHorizontalScrollIndicator={false}
