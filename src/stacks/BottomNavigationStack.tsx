@@ -9,6 +9,7 @@ import { AppColors } from '@constants/AppColors';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { IFavoriteAndWatchLater, setFavories } from '@store/slice/mainSlice';
 import { Home, WatchList } from '@screens/index';
+import NetworkLog from '@screens/NetworkLog';
 
 type BottomNavigationStackTypes = {
   Home: undefined;
@@ -59,7 +60,7 @@ const BottomNavigationStack = () => {
       />
       <Tab.Screen
         name="Bookmark"
-        component={Home}
+        component={NetworkLog}
         options={{
           tabBarIcon: ({ focused }) => setTabbarIcon(Icons.BookmarkIcon, focused),
         }}
