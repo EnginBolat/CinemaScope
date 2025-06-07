@@ -5,7 +5,7 @@ export const rawStyle = (disabled?: boolean) =>
   StyleSheet.create({
     container: {
       paddingHorizontal: 12,
-      paddingVertical: 18,
+      paddingVertical: 14,
       backgroundColor: disabled ? AppColors.secondaryGhost : AppColors.secondary,
       width: '100%',
       alignItems: 'center',
