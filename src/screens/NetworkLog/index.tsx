@@ -31,7 +31,7 @@ const RequestDetails: FC<Props> = props => {
           {Object.entries(entry).map(([key, value]) => (
             <View key={key} style={styles.keyValueContainer}>
               <RNText style={styles.keyText}>{key}:</RNText>
-              <RNText style={styles.keyText}>
+              <RNText style={styles.valueText}>
                 {typeof value === 'object' ? JSON.stringify(value) : String(value)}
               </RNText>
             </View>

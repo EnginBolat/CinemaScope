@@ -8,14 +8,15 @@ import { IconProps } from '@assets/icons/IconProps';
 import { AppColors } from '@constants/AppColors';
 import useLocalStorage from '@hooks/useLocalStorage';
 import { IFavoriteAndWatchLater, setFavories } from '@store/slice/mainSlice';
-import { Home, WatchList } from '@screens/index';
+import { Home, Search, WatchList } from '@screens/index';
 import NetworkLog from '@screens/NetworkLog';
+import { scaleHeight, scaleWidth } from '@helpers/helper.ts';
 
 type BottomNavigationStackTypes = {
   Home: undefined;
   WatchList: undefined;
   Bookmark: undefined;
-  TvShows: undefined;
+  Search: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomNavigationStackTypes>();
@@ -34,7 +35,7 @@ const BottomNavigationStack = () => {
   }, []);
 
   const setTabbarIcon = (Icon: FC<IconProps>, focused: boolean): React.ReactNode => {
-    return <Icon color={focused ? AppColors.white : AppColors.white50} />;
+    return <Icon color={focused ? AppColors.white : AppColors.white50} height={scaleHeight(32)} width={scaleWidth(32)} />;
   };
 
   return (
@@ -52,6 +53,13 @@ const BottomNavigationStack = () => {
         }}
       />
       <Tab.Screen
+        name="Search"
+        component={Search}
+        options={{
+          tabBarIcon: ({ focused }) => setTabbarIcon(Icons.Search, focused),
+        }}
+      />
+      <Tab.Screen
         name="WatchList"
         component={WatchList}
         options={{
@@ -63,13 +71,6 @@ const BottomNavigationStack = () => {
         component={NetworkLog}
         options={{
           tabBarIcon: ({ focused }) => setTabbarIcon(Icons.BookmarkIcon, focused),
-        }}
-      />
-      <Tab.Screen
-        name="TvShows"
-        component={Home}
-        options={{
-          tabBarIcon: ({ focused }) => setTabbarIcon(Icons.OndemandVideoIcon, focused),
         }}
       />
     </Tab.Navigator>

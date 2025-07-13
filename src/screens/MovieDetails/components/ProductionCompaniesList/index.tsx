@@ -31,7 +31,7 @@ const ProductionCompaniesList = ({ companies }: Props) => {
       <FlatList
         showsHorizontalScrollIndicator={false}
         bounces={false}
-        horizontal
+        horizontal={true}
         data={companies}
         contentContainerStyle={styles.horizontalListContentContainer}
         renderItem={renderItemProducatioCompanies}

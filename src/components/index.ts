@@ -6,3 +6,4 @@ export { default as BottomSheet } from './BottomSheet';
 export { default as TabSwitch } from './TabSwitch';
 export { default as MovieCard } from './MovieCard';
 export { default as MovieCardWithDescription } from './MovieCardWithDescription';
+export { default as TextInput } from './TextInput';

@@ -26,7 +26,7 @@ const MovieCard: FC<IMovileCardProps> = props => {
       <Text text={item.title} type="mediumCaption14" numberOfLines={1} style={styles.title} />
       <View style={styles.textContainer}>
         <Star height={scale(18)} width={scale(18)} />
-        <Text text={item.vote_average.toString().substring(0, 3)} type="mediumCaption14" numberOfLines={2} />
+        <Text text={item?.vote_average?.toString().substring(0, 3)} type="mediumCaption14" numberOfLines={2} />
       </View>
     </Pressable>
   );
