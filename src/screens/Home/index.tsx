@@ -9,7 +9,7 @@ import { Header } from '@components/index';
 import { AppColors } from '@constants/AppColors';
 import { useGetPopularContentQuery, useNowPlayingMovieQuery, useUpcomingMovieQuery } from '@hooks/useMovieRequest.ts';
 import { Popular } from '@models/Popular';
-
+// asdasd
 import { ContentHorizontalScrollableList } from './components';
 
 const Home = () => {
